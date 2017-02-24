@@ -1,0 +1,15 @@
+version: '2'
+services:
+    sut:
+        build:
+            context: ./test/
+            dockerfile: Dockerfile.test
+        depends_on:
+            - "primary-postgres"
+        environment: 
+            - "POSTGRES_HOST=primary-postgres"
+            - "POSTGRES_USER=postgres"
+            - "POSTGRES_DB=postgres"
+            - "PGPASSWORD=postgres"
+    primary-postgres:
+        image: "postgres:9.6.2"
