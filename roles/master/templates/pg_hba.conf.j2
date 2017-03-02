@@ -98,4 +98,10 @@ host    all             all             ::1/128                 md5
 #host    replication     postgres        127.0.0.1/32            md5
 #host    replication     postgres        ::1/128                 md5
 host    replication     replica        192.168.50.11/24            md5
+host    replication     repmgr         192.168.50.11/24          trust
 host    replication     replica        192.168.50.12/24            md5
+host    replication     repmgr         192.168.50.12/24          trust
+
+host    repmgr          repmgr         192.168.50.10/24          trust
+host    repmgr          repmgr         192.168.50.11/24          trust
+host    repmgr          repmgr         192.168.50.12/24          trust

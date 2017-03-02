@@ -16,8 +16,6 @@
     owner: postgres
     group: postgres
     mode: 0640
-  notify:
-    - restart postgres
 
 - name: Create archive directory
   become: yes
@@ -38,5 +36,53 @@
     owner: postgres
     group: postgres
     mode: 0644
-  notify:
-    - restart postgres
+
+- name: Install repmgr
+  apt:
+      name: "repmgr"
+      update_cache: yes
+      cache_valid_time: 86400
+  become: yes
+
+- name: Create repmgr user
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    name: repmgr
+    role_attr_flags: SUPERUSER
+    state: present
+
+- name: Create repmgr database
+  become: yes
+  become_user: postgres
+  postgresql_db:
+    name: repmgr
+    owner: repmgr
+    state: present
+
+- name: Setup repmgr configuration
+  become: yes
+  template:
+    src: repmgr.conf.j2
+    dest: /etc/repmgr.conf
+    owner: postgres
+    group: postgres
+    mode: 0640
+
+- name: Include schema name to repmgr user's search path
+  become: yes
+  become_user: postgres
+  command: psql -c 'ALTER USER repmgr SET search_path TO repmgr_test, "$user", public;'
+  changed_when: False
+
+- name: Restart postgres
+  service: name=postgresql state=restarted
+  become: yes
+
+- name: Register master in repmgr
+  become: yes
+  become_user: postgres
+  command: repmgr master register
+  register: repmgr_command
+  changed_when: "'[NOTICE] master node correctly registered for cluster' in repmgr_command.stdout"
+  failed_when: "'[ERROR] there is a master already in cluster' not in repmgr_command.stderr"
