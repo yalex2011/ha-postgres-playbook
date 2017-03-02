@@ -1,0 +1,25 @@
+---
+- hosts: all
+  connection: local
+  roles:
+    - postgres
+  tasks:
+    - name: Set new postgres password
+      user:
+          name: postgres
+          update_password: always
+          # TODO: Always marked as changed.
+          password: "{{ 'postgres' | password_hash('sha512') }}"
+      become: yes
+
+- hosts: master
+  connection: local
+  roles:
+    - master
+
+- hosts: standby
+  connection: local
+  environment:
+    PGPASSWORD: 'replica'
+  roles:
+    - standby

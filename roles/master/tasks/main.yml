@@ -1,0 +1,42 @@
+- name: Create replication user
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    name: replica
+    password: replica
+    role_attr_flags: REPLICATION
+    state: present
+
+- name: Setup postgres configuration
+  become: yes
+  become_user: postgres
+  template:
+    src: postgresql.conf.j2
+    dest: /etc/postgresql/9.5/main/postgresql.conf
+    owner: postgres
+    group: postgres
+    mode: 0640
+  notify:
+    - restart postgres
+
+- name: Create archive directory
+  become: yes
+  become_user: postgres
+  file:
+    path: /var/lib/postgresql/9.5/main/archive
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0775
+
+- name: Setup postgres access configuration
+  become: yes
+  become_user: postgres
+  template:
+    src: pg_hba.conf.j2
+    dest: /etc/postgresql/9.5/main/pg_hba.conf
+    owner: postgres
+    group: postgres
+    mode: 0644
+  notify:
+    - restart postgres

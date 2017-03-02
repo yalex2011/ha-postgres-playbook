@@ -1,0 +1,33 @@
+- name: Install postgres
+  apt:
+      name: "{{ item }}"
+      update_cache: yes
+      cache_valid_time: 86400
+  become: yes
+  with_items:
+      - postgresql
+      - postgresql-client
+      - postgresql-contrib
+
+- name: Install pip
+  apt:
+      name: python-pip
+      update_cache: yes
+      cache_valid_time: 86400
+  become: yes
+
+- name: Install psycopg2 dependencies
+  apt:
+      name: "{{ item }}"
+      update_cache: yes
+      cache_valid_time: 86400
+  become: yes
+  with_items:
+    - libpq-dev
+    - python-dev
+
+- name: Install psycopg2
+  pip:
+    name: psycopg2
+    state: present
+  become: yes

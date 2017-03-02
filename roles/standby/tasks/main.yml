@@ -1,0 +1,46 @@
+- name: Stop postgres
+  service: name=postgresql state=stopped
+  become: yes
+
+- name: Setup postgres configuration
+  become: yes
+  become_user: postgres
+  template:
+    src: postgresql.conf.j2
+    dest: /etc/postgresql/9.5/main/postgresql.conf
+    owner: postgres
+    group: postgres
+    mode: 0640
+
+- name: Main exists?
+  stat: path=/var/lib/postgresql/9.5/main
+  register: main_stat
+  changed_when: False
+
+- name: Backup current data
+  command: mv /var/lib/postgresql/9.5/main /var/lib/postgresql/9.5/main_original
+  become: yes
+  become_user: postgres
+  when: main_stat.stat.exists
+
+- name: Create master base-backup
+  shell: pg_basebackup -h 192.168.50.10 -D /var/lib/postgresql/9.5/main -U replica -v -P
+  become: yes
+  become_user: postgres
+  register: pg_basebackup_result
+  failed_when: "'pg_basebackup: base backup completed' not in pg_basebackup_result.stderr"
+  when: main_stat.stat.exists
+
+- name: Setup recovery configuration
+  become: yes
+  become_user: postgres
+  template:
+    src: recovery.conf.j2
+    dest: /var/lib/postgresql/9.5/main/recovery.conf
+    owner: postgres
+    group: postgres
+    mode: 0664
+
+- name: Start postgres
+  service: name=postgresql state=started
+  become: yes
