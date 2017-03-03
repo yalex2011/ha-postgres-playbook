@@ -14,11 +14,15 @@
 
 - hosts: master
   connection: local
+  vars_files:
+    - vars/main.yml
   roles:
     - master
 
 - hosts: standby
   connection: local
+  vars_files:
+    - vars/main.yml
   environment:
     PGPASSWORD: 'replica'
   roles:
