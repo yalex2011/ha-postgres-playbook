@@ -44,6 +44,15 @@
       cache_valid_time: 86400
   become: yes
 
+- name: Create repmgr log directory
+  become: yes
+  file:
+    path: /var/log/repmgr
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0775
+
 - name: Create repmgr user
   become: yes
   become_user: postgres
@@ -84,5 +93,4 @@
   become_user: postgres
   command: repmgr master register
   register: repmgr_command
-  changed_when: "'[NOTICE] master node correctly registered for cluster' in repmgr_command.stderr"
-  failed_when: "'[NOTICE] master node correctly registered for cluster' not in repmgr_command.stderr"
+  failed_when: "repmgr_command.rc != 0"

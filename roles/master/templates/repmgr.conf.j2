@@ -1,4 +1,13 @@
+pg_bindir=/usr/lib/postgresql/9.5/bin/
 cluster={{ cluster_name }}
 node={{ node_id }}
 node_name={{ node_name }}
 conninfo='host={{listen_address}} port=5432 user=repmgr dbname=repmgr'
+loglevel=DEBUG
+logfile='/var/log/repmgr/repmgr.log'
+failover=automatic
+reconnect_attempts=3
+reconnect_interval=5
+promote_command='repmgr standby promote'
+follow_command='repmgr standby follow'
+

@@ -5,6 +5,15 @@
       cache_valid_time: 86400
   become: yes
 
+- name: Create repmgr log directory
+  become: yes
+  file:
+    path: /var/log/repmgr
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: 0775
+
 - name: Stop postgres
   service: name=postgresql state=stopped
   become: yes
@@ -56,8 +65,7 @@
   become_user: postgres
   command: repmgr -h {{ master_address }} -p 5432 -U repmgr -d repmgr -D /var/lib/postgresql/9.5/main --ignore-external-config-files standby clone
   register: clone_command
-  changed_when: "'standby clone (using pg_basebackup) complete' in clone_command.stderr"
-  failed_when: "'standby clone (using pg_basebackup) complete' not in clone_command.stderr"
+  failed_when: "clone_command.rc != 0"
 
 - name: Start postgres
   service: name=postgresql state=started
@@ -68,5 +76,4 @@
   become_user: postgres
   command: repmgr standby register
   register: repmgr_command
-  changed_when: "'NOTICE: standby node correctly registered for cluster' in repmgr_command.stderr"
-  failed_when: "'ERROR:  duplicate key value violates unique constraint' in repmgr_command.stderr"
+  failed_when: "repmgr_command.rc != 0"
