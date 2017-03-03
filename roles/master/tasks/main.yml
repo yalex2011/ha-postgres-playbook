@@ -84,5 +84,5 @@
   become_user: postgres
   command: repmgr master register
   register: repmgr_command
-  changed_when: "'[NOTICE] master node correctly registered for cluster' in repmgr_command.stdout"
-  failed_when: "'[ERROR] there is a master already in cluster' not in repmgr_command.stderr"
+  changed_when: "'[NOTICE] master node correctly registered for cluster' in repmgr_command.stderr"
+  failed_when: "'[NOTICE] master node correctly registered for cluster' not in repmgr_command.stderr"
