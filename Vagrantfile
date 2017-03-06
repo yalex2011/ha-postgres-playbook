@@ -5,6 +5,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "master", primary: true do |master|
     master.vm.box = "ubuntu/xenial64"
+    master.vm.hostname = "master"
     master.vm.network "private_network", ip: "192.168.50.10"
     master.vm.provision "ansible_local" do |ansible|
       ansible.playbook = "main.yml"
@@ -15,6 +16,7 @@ Vagrant.configure("2") do |config|
   (1..2).each do |i|
     config.vm.define "standby-0#{i}" do |standby|
       standby.vm.box = "ubuntu/xenial64"
+      standby.vm.hostname = "standby-0#{i}"
       standby.vm.network "private_network", ip: "192.168.50.1#{i}"
       standby.vm.provision "ansible_local" do |ansible|
         ansible.playbook = "main.yml"
