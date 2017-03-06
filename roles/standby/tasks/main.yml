@@ -77,3 +77,8 @@
   command: repmgr standby register
   register: repmgr_command
   failed_when: "repmgr_command.rc != 0"
+
+- name: Run repmgr daemon
+  become: yes
+  become_user: postgres
+  command: repmgrd -d -p /var/run/postgresql/repmgrd.pid
