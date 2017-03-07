@@ -1,0 +1,35 @@
+- name: Install pgpool2
+  apt:
+      name: "{{ item }}"
+      update_cache: yes
+      cache_valid_time: 86400
+  become: yes
+  with_items:
+    - pgpool2
+    - postgresql-client-9.5
+
+- name: Setup pgpool2 pool_passwd
+  become: yes
+  command: pg_md5 --md5 --username=postgres postgres
+  register: pg_md5_command
+  failed_when: "pg_md5_command.rc != 0"
+
+- name: Set pool_passwd permssions
+  become: yes
+  file:
+    path: /etc/pgpool2/pool_passwd
+    state: file
+    owner: postgres
+    group: postgres
+    mode: 0644
+
+- name: Setup pgpool2 configuration
+  become: yes
+  template:
+    src: pgpool.conf.j2
+    dest: /etc/pgpool2/pgpool.conf
+    owner: root
+    group: postgres
+    mode: 0640
+  notify:
+    - restart pgpool2

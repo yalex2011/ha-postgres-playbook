@@ -25,6 +25,16 @@ Vagrant.configure("2") do |config|
     end
   end
 
+  config.vm.define "pgpool" do |standby|
+    standby.vm.box = "ubuntu/xenial64"
+    standby.vm.hostname = "pgpool"
+    standby.vm.network "private_network", ip: "192.168.50.13"
+    standby.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "main.yml"
+      ansible.inventory_path = "inventory.ini"
+    end
+  end
+
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.

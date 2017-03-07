@@ -27,3 +27,10 @@
     PGPASSWORD: 'replica'
   roles:
     - standby
+
+- hosts: pgpool
+  connection: local
+  vars_files:
+    - vars/main.yml
+  roles:
+    - pgpool

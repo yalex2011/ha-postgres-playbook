@@ -1,0 +1,4 @@
+- name: restart pgpool2
+  service: name=postgresql state=restarted
+  become: yes
+
