@@ -1,12 +1,9 @@
 - name: Install pgpool2
   apt:
-      name: "{{ item }}"
+      name: "pgpool2"
       update_cache: yes
       cache_valid_time: 86400
   become: yes
-  with_items:
-    - pgpool2
-    - postgresql-client-9.5
 
 - name: Setup pgpool2 pool_passwd
   become: yes
