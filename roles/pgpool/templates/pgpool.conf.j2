@@ -321,7 +321,7 @@ master_slave_sub_mode = 'stream'
 
 # - Streaming -
 
-sr_check_period = 0
+sr_check_period = 15
                                    # Streaming replication check period
                                    # Disabled (0) by default
 sr_check_user = 'repmgr'
@@ -357,15 +357,15 @@ follow_master_command = ''
 # HEALTH CHECK
 #------------------------------------------------------------------------------
 
-health_check_period = 0
+health_check_period = 5
                                    # Health check period
                                    # Disabled (0) by default
 health_check_timeout = 20
                                    # Health check timeout
                                    # 0 means no timeout
-health_check_user = 'nobody'
+health_check_user = 'repmgr'
                                    # Health check user
-health_check_password = ''
+health_check_password = 'repmgr'
                                    # Password for health check user
 health_check_max_retries = 0
                                    # Maximum number of times to retry a failed health check before giving up.
