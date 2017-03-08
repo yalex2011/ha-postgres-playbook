@@ -5,6 +5,9 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "master", primary: true do |master|
     master.vm.box = "ubuntu/xenial64"
+    master.vm.provider "virtualbox" do |vb|
+      vb.memory = 512
+    end
     master.vm.hostname = "master"
     master.vm.network "private_network", ip: "192.168.50.10"
     master.vm.provision "ansible_local" do |ansible|
@@ -16,6 +19,9 @@ Vagrant.configure("2") do |config|
   (1..2).each do |i|
     config.vm.define "standby-0#{i}" do |standby|
       standby.vm.box = "ubuntu/xenial64"
+      standby.vm.provider "virtualbox" do |vb|
+        vb.memory = 512
+      end
       standby.vm.hostname = "standby-0#{i}"
       standby.vm.network "private_network", ip: "192.168.50.1#{i}"
       standby.vm.provision "ansible_local" do |ansible|
@@ -27,6 +33,9 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "pgpool" do |standby|
     standby.vm.box = "ubuntu/xenial64"
+    standby.vm.provider "virtualbox" do |vb|
+      vb.memory = 512
+    end
     standby.vm.hostname = "pgpool"
     standby.vm.network "private_network", ip: "192.168.50.13"
     standby.vm.provision "ansible_local" do |ansible|
