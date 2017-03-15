@@ -453,7 +453,7 @@ client_idle_limit_in_recovery = 0
 
 # - Enabling -
 
-use_watchdog = off
+use_watchdog = on
                                     # Activates watchdog
                                     # (change requires restart)
 
@@ -482,21 +482,22 @@ wd_authkey = ''
 
 # - Virtual IP control Setting -
 
-delegate_IP = ''
+delegate_IP = '{{ cluster_virtual_ip }}'
                                     # delegate IP address
                                     # If this is empty, virtual IP never bring up.
-                                    # (change requires restart)
-ifconfig_path = '/sbin'
+                                    # (change requires restarr)
+ifconfig_path = '/var/lib/postgresql'
+
                                     # ifconfig command path
                                     # (change requires restart)
-if_up_cmd = 'ifconfig eth0:0 inet $_IP_$ netmask 255.255.255.0'
+if_up_cmd = 'ifconfig {{ pgpool_vip_device }}:0 inet $_IP_$ netmask 255.255.255.0'
                                     # startup delegate IP command
                                     # (change requires restart)
-if_down_cmd = 'ifconfig eth0:0 down'
+if_down_cmd = 'ifconfig {{ pgpool_vip_device }}:0 down'
                                     # shutdown delegate IP command
                                     # (change requires restart)
 
-arping_path = '/usr/sbin'           # arping command path
+arping_path = '/var/lib/postgresql' # arping command path
                                     # (change requires restart)
 
 arping_cmd = 'arping -U $_IP_$ -w 1'
@@ -538,11 +539,11 @@ wd_heartbeat_keepalive = 2
 wd_heartbeat_deadtime = 30
                                     # Deadtime interval for heartbeat signal (sec)
                                     # (change requires restart)
-heartbeat_destination0 = 'host0_ip1'
+heartbeat_destination0 = '{{ other_pgpool_hostname }}'
                                     # Host name or IP address of destination 0
                                     # for sending heartbeat signal.
                                     # (change requires restart)
-heartbeat_destination_port0 = 9694
+heartbeat_destination_port0 = {{ other_pgpool_heartbeat_port }}
                                     # Port number of destination 0 for sending
                                     # heartbeat signal. Usually this is the
                                     # same as wd_heartbeat_port.
@@ -591,6 +592,10 @@ wd_lifecheck_password = ''
 #other_pgpool_hostname1 = 'host1'
 #other_pgpool_port1 = 5432
 #other_wd_port1 = 9000
+
+other_pgpool_hostname0 = '{{ other_pgpool_hostname }}'
+other_pgpool_port0 = {{ other_pgpool_port }}
+other_wd_port0 = {{ other_pgpool_wd_port }}
 
 
 #------------------------------------------------------------------------------

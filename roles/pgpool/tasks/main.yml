@@ -1,9 +1,12 @@
-- name: Install pgpool2
+- name: Install pgpool2 and arping command
   apt:
-      name: "pgpool2"
+      name: "{{ item }}"
       update_cache: yes
       cache_valid_time: 86400
   become: yes
+  with_items:
+    - pgpool2
+    - arping
 
 - name: Setup pgpool2 pool_passwd
   become: yes
@@ -19,6 +22,36 @@
     owner: postgres
     group: postgres
     mode: 0644
+
+- name: Postgres ifconfig exists?
+  stat: path=/var/lib/postgresql/ifconfig
+  register: ifconfig_stat
+  changed_when: False
+
+- name: Clone ifconfig to postgres
+  command: cp /sbin/ifconfig /var/lib/postgresql/ifconfig
+  become: yes
+  when: not ifconfig_stat.stat.exists
+
+- name: Set postgres ifconfig cap_net_admin
+  command: setcap cap_net_admin=eip /var/lib/postgresql/ifconfig
+  become: yes
+  when: not ifconfig_stat.stat.exists
+
+- name: Postgres arping exists?
+  stat: path=/var/lib/postgresql/arping
+  register: arping_stat
+  changed_when: False
+
+- name: Clone arping to postgres
+  command: cp /usr/sbin/arping /var/lib/postgresql/arping
+  become: yes
+  when: not arping_stat.stat.exists
+
+- name: Set postgres arping cap_net_admin
+  command: setcap cap_net_admin=eip /var/lib/postgresql/arping
+  become: yes
+  when: not arping_stat.stat.exists
 
 - name: Setup pgpool2 configuration
   become: yes

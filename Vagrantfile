@@ -31,16 +31,18 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  config.vm.define "pgpool" do |standby|
-    standby.vm.box = "ubuntu/xenial64"
-    standby.vm.provider "virtualbox" do |vb|
-      vb.memory = 512
-    end
-    standby.vm.hostname = "pgpool"
-    standby.vm.network "private_network", ip: "192.168.50.13"
-    standby.vm.provision "ansible_local" do |ansible|
-      ansible.playbook = "main.yml"
-      ansible.inventory_path = "inventory.ini"
+  (1..2).each do |i|
+    config.vm.define "pgpool-0#{i}" do |standby|
+      standby.vm.box = "ubuntu/xenial64"
+      standby.vm.provider "virtualbox" do |vb|
+        vb.memory = 1024
+      end
+      standby.vm.hostname = "pgpool-0#{i}"
+      standby.vm.network "private_network", ip: "192.168.50.1#{i + 2}"
+      standby.vm.provision "ansible_local" do |ansible|
+        ansible.playbook = "main.yml"
+        ansible.inventory_path = "inventory.ini"
+      end
     end
   end
 
