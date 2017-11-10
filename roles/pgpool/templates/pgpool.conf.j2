@@ -382,7 +382,7 @@ connect_timeout = 10000
 # FAILOVER AND FAILBACK
 #------------------------------------------------------------------------------
 
-failover_command = ''
+failover_command = '/usr/local/libexec/pgpool/failover.sh %d %P %H %R'
                                    # Executes this command at failover
                                    # Special values:
                                    #   %d = node id

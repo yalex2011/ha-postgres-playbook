@@ -53,6 +53,14 @@
   become: yes
   when: not arping_stat.stat.exists
 
+- name: Create directory for pgPool scripts
+  file: state=directory path=/usr/local/libexec/pgpool mode=0755 owner=root group=root
+
+- name: Install pgpool scripts
+  copy: src={{ item }} dest=/usr/local/libexec/pgpool/{{ item }} mode=0755 owner=root group=root
+  with_items:
+   - failover.sh
+
 - name: Setup pgpool2 configuration
   become: yes
   template:
